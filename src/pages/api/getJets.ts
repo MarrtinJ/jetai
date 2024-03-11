@@ -8,7 +8,9 @@ type Data = {
     jets: Jet[]
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// the API GET request that retrieves the Jet information from Prisma
+// sorts by wingspan in descending order
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Jet[]>) {
     if (req.method === 'GET') {
         const jets = await prisma.jet.findMany({
             orderBy: [
