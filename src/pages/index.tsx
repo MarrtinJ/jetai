@@ -1,5 +1,6 @@
 import { Jet } from '@prisma/client';
 import prisma from './db'
+import { useEffect } from 'react';
 
 type Props = {
   jets: Jet[]
@@ -36,17 +37,31 @@ export default function Home({ jets }: Props) {
 }
 
 // // retreive the jets from db
+// export async function getServerSideProps() {
+//   const jets = await prisma.jet.findMany({
+//     orderBy: [
+//       {
+//         wingspan: 'desc'
+//       }
+//     ]
+//   })
+//   // console.log(jets)
+//   return {
+//     props: { 
+//       jets
+//     }
+//   }
+// }
+
 export async function getServerSideProps() {
-  const jets = await prisma.jet.findMany({
-    orderBy: [
-      {
-        wingspan: 'desc'
-      }
-    ]
+  const res = await fetch('http://localhost:3000/api/getJets', {
+    method: 'GET'
   })
-  // console.log(jets)
+  const jets = await res.json()
+  console.log(jets)
+
   return {
-    props: { 
+    props: {
       jets
     }
   }
