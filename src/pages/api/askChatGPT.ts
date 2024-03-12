@@ -21,14 +21,21 @@ export default async function handler(
     res: NextApiResponse<ResponseData>,
     ) {
 
-    const prompt = req.body.prompt
+    console.log(req.body)
+
+    // const prompt = req.body.prompt
+    // console.log(prompt)
     const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: "user", content: "How are you doing" }],
         model: "gpt-3.5-turbo",
+        messages: [
+            {role: "user", content: "Say this is a test"}
+        //     { role: "user", content: prompt}
+        ],
     });
 
     const response = chatCompletion.choices[0].message.content?.trim() || 'Sorry, I had trouble answering your question'
-    console.log(response)
+    // console.log(response)
     res.status(200).json({text: response})
+    // res.status(200).json({text: 'hello'})
 }
 

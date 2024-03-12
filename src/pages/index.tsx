@@ -30,12 +30,15 @@ export default function Home({ jets }: Props) {
   }
   
   async function askChatGPT() {
-    console.log('Sending to ChatGPT')
+    // console.log('Sending to ChatGPT')
+    const prompt = `Could you rank the following jet(s) for me in terms of ${trait}?: ${selectedJets.join(", ")} `
+    console.log(prompt)
     const res = await fetch('http://localhost:3000/api/askChatGPT', {
-      // method: 'GET'
+      method: 'POST',
+      body: prompt
     })
     const body = await res.json()
-    // console.log(body)
+    console.log(body)
   }
 
   return (
@@ -55,7 +58,7 @@ export default function Home({ jets }: Props) {
             <tr className='bg-white' key={jet.id}>
               <td className="border border-black p-4">
                 <input type="checkbox"
-                onChange={(e: ChangeEvent) => handleCheckbox(e, jet.id, jet.name)}/>
+                onChange={(e) => handleCheckbox(e, jet.id, jet.name)}/>
               </td>
               <td className="border border-black p-4">{jet.name}</td>
               <td className="border border-black p-4">{jet.wingspan}</td>
