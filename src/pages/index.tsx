@@ -15,7 +15,7 @@ export default function Home({ jets }: Props) {
   const [ selectedJets, setSelectedJets] = useState<string[]>([])
   const [trait, setTrait] = useState<string>("top speed")
   const [replyString, setReplyString] = useState<string>("")
-  const [rankedJets, setRankedJets] = useState([])
+  const [rankedJets, setRankedJets] = useState<rankedJet[]>([])
 
   // for debugging state
   useEffect(() =>{
@@ -52,7 +52,7 @@ export default function Home({ jets }: Props) {
   }
 
   return (
-    <div className='ml-5 mt-5 gap-5'>
+    <section className='ml-5 mt-5 gap-5'>
       <h1 className="text-2xl">Top 10 Charter Jets</h1>
       <table className="table-auto w-4/5 mt-5 bg-zinc-200 border border-black">
         <tbody >
@@ -109,10 +109,11 @@ export default function Home({ jets }: Props) {
             </tbody>
           </table>
       </div>
-    </div>
+    </section>
   );
 }
 
+// retrieve the Jet information from the database
 export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/getJets', {
     method: 'GET'

@@ -16,6 +16,8 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+
+// the POST API request that packages the prompt, sends the request, processes the response
 export default async function handler(
     req: GenerateNextApiRequest,
     res: NextApiResponse<ResponseData>,
@@ -26,8 +28,8 @@ export default async function handler(
     }
     const body = JSON.parse(`${req.body}`)
     const prompt = body.prompt
-    // console.log(prompt)
 
+    // send API request to OpenAI
     const chatCompletion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
@@ -35,7 +37,8 @@ export default async function handler(
             {role: "user", content: prompt}
         ],
     });
-
+    
+    // Preprocess the top choice response
     const response = chatCompletion.choices[0].message.content?.trim() || 'Sorry, I had trouble answering your question'
     // console.log(response)
     res.status(200).json({text: response})
