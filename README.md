@@ -7,7 +7,7 @@ npm install
 npm run dev
 ```
 
-I think the project should run as is because the database is local, but if you run into troubl you might want to remigrate/reseed the database.
+I think the project should run as is because the database is local, but if you run into trouble you might want to remigrate/reseed the database.
 
 ```bash
 npx prisma migrate dev --name init
