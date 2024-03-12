@@ -20,8 +20,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             ]
           })
         res.status(200).json(jets);
-    } else {
-      // Handle any other HTTP method
-        // res.status(200).json({ name: "Didn't process" });
     }
 }

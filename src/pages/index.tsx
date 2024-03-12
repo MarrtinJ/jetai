@@ -5,46 +5,56 @@ type Props = {
   jets: Jet[]
 }
 
+type rankedJet = {
+  rank: number,
+  name: string,
+  value: string
+}
+
 export default function Home({ jets }: Props) {
   const [ selectedJets, setSelectedJets] = useState<string[]>([])
   const [trait, setTrait] = useState<string>("top speed")
+  const [replyString, setReplyString] = useState<string>("")
+  const [rankedJets, setRankedJets] = useState([])
 
   // for debugging state
   useEffect(() =>{
     console.log(trait)
     console.log(selectedJets)
-  }, [trait, selectedJets])
+    console.log(replyString)
+  }, [trait, selectedJets, replyString])
 
   function handleCheckbox(event:ChangeEvent, jetId:number, jetName: string) {
-    // console.log(event.target.checked)
-    // console.log(id)
-    // console.log(jet)
-
     if ((event.target as HTMLInputElement).checked) {
       // add jet to selected
       setSelectedJets([...selectedJets, jetName])
     } else {
       // remove jet
-      setSelectedJets(selectedJets.filter((j: string) => j !== jetName))
+      setSelectedJets(selectedJets.filter((j) => j !== jetName))
     }
   }
   
   async function askChatGPT() {
-    // console.log('Sending to ChatGPT')
-    const prompt = `Could you rank the following jet(s) for me in terms of ${trait}?: ${selectedJets.join(", ")} `
-    console.log(prompt)
+    const prompt = `Could you rank the following jet(s) for me in terms of ${trait}? ${selectedJets.join(", ")} Please provide your response as a list of JSON objects in the following format: {"rank": number, "name": "jet name", "value": "numerical value with units"}.`
+
     const res = await fetch('http://localhost:3000/api/askChatGPT', {
       method: 'POST',
-      body: prompt
+      body: JSON.stringify({
+        prompt
+      })
     })
+
     const body = await res.json()
-    console.log(body)
+    const responseText = body.text
+    setReplyString(responseText)
+    const obj = JSON.parse(responseText)
+    setRankedJets(obj)
   }
 
   return (
     <div className='ml-5 mt-5 gap-5'>
       <h1 className="text-2xl">Top 10 Charter Jets</h1>
-      <table className="table-auto mt-5 bg-zinc-200 border border-black">
+      <table className="table-auto w-4/5 mt-5 bg-zinc-200 border border-black">
         <tbody >
           <tr>
             <th className="border border-black p-4">Select</th>
@@ -77,6 +87,27 @@ export default function Home({ jets }: Props) {
           <option value="maximum number of seats">Maximum Seats</option>
         </select>
         <button className='border border-black p-1 rounded-md' onClick={askChatGPT}>Compare Selected Jets</button>
+      </div>
+      {/* display response when received */}
+      <div className='mt-5 mb-5'>
+          {replyString.length > 0 ?<p className='w-4/5'>{replyString}</p> : null }
+          <table className='table-auto w-4/5 mt-5 bg-zinc-200 border border-black'>
+            <tbody >
+            <tr>
+              <th className="border border-black p-4">Rank</th>
+              <th className="border border-black p-4">Name</th>
+              <th className="border border-black p-4">Value</th>
+            </tr>
+            {/* mapping each response to an individual row */}
+            {rankedJets.length > 0 && rankedJets.map((jet: rankedJet) => (
+            <tr className='bg-white' key={jet.rank}>
+              <td className="border border-black p-4">{jet.rank}</td>
+              <td className="border border-black p-4">{jet.name}</td>
+              <td className="border border-black p-4">{jet.value}</td>
+            </tr>
+            ))}
+            </tbody>
+          </table>
       </div>
     </div>
   );

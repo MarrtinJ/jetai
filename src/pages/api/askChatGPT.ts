@@ -20,22 +20,24 @@ export default async function handler(
     req: GenerateNextApiRequest,
     res: NextApiResponse<ResponseData>,
     ) {
-
-    console.log(req.body)
-
-    // const prompt = req.body.prompt
+    if (req.method !== 'POST') {
+        res.status(405).send({ text: 'Only POST requests allowed' })
+        return
+    }
+    const body = JSON.parse(`${req.body}`)
+    const prompt = body.prompt
     // console.log(prompt)
+
     const chatCompletion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-            {role: "user", content: "Say this is a test"}
-        //     { role: "user", content: prompt}
+            // {role: "user", content: "Say this is a test"},
+            {role: "user", content: prompt}
         ],
     });
 
     const response = chatCompletion.choices[0].message.content?.trim() || 'Sorry, I had trouble answering your question'
     // console.log(response)
     res.status(200).json({text: response})
-    // res.status(200).json({text: 'hello'})
 }
 
